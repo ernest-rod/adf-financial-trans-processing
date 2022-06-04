@@ -2,7 +2,7 @@
 	"name": "trg_sevnt_axiomstorage4inbounddata_inbounddatafiles",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipelines": [],
 		"type": "BlobEventsTrigger",
 		"typeProperties": {
