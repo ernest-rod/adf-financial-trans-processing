@@ -1,0 +1,21 @@
+{
+	"name": "ds_csv_inbound_transaction_data_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_abls_axiomstorage4inbounddata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "inbounddatafiles"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
