@@ -1,0 +1,11 @@
+{
+	"name": "lnk_abls_axiomstorage4inbounddata",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://axiomstorage4inbounddata.blob.core.windows.net",
+			"accountKind": "StorageV2"
+		}
+	}
+}
