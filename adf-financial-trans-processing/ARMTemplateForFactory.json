@@ -107,8 +107,8 @@
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
 									"recursive": true,
-									"enablePartitionDiscovery": false,
-									"prefix": "transaction*"
+									"wildcardFileName": "transaction*",
+									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
