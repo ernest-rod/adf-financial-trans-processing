@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-financial-trans-processing"
+		},
+		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
+			"value": "https://axiomstorage4inbounddata.blob.core.windows.net"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
