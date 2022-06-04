@@ -6,6 +6,7 @@
 		"typeProperties": {
 			"serviceEndpoint": "https://axiomstorage4inbounddata.blob.core.windows.net",
 			"accountKind": "StorageV2"
-		}
+		},
+		"description": "Link Service to Azure Blob Storage Account: axiomstorage4inbounddata"
 	}
 }
