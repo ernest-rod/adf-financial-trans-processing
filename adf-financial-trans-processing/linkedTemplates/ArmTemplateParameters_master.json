@@ -8,6 +8,9 @@
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"value": "https://axiomstorage4inbounddata.blob.core.windows.net"
 		},
+		"lnk_adls_axiomstandardatalake_properties_typeProperties_url": {
+			"value": "https://axiomstandarddatalake.dfs.core.windows.net"
+		},
 		"containerUri": {
 			"value": ""
 		},

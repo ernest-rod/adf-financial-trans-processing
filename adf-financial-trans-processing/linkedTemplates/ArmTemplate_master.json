@@ -11,6 +11,10 @@
 			"type": "string",
 			"defaultValue": "https://axiomstorage4inbounddata.blob.core.windows.net"
 		},
+		"lnk_adls_axiomstandardatalake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://axiomstandarddatalake.dfs.core.windows.net"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -40,6 +44,9 @@
 					},
 					"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint')]"
+					},
+					"lnk_adls_axiomstandardatalake_properties_typeProperties_url": {
+						"value": "[parameters('lnk_adls_axiomstandardatalake_properties_typeProperties_url')]"
 					}
 				}
 			},

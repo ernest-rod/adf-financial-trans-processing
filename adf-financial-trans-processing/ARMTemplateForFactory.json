@@ -10,6 +10,10 @@
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://axiomstorage4inbounddata.blob.core.windows.net"
+		},
+		"lnk_adls_axiomstandardatalake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://axiomstandarddatalake.dfs.core.windows.net"
 		}
 	},
 	"variables": {
@@ -27,6 +31,19 @@
 				"typeProperties": {
 					"serviceEndpoint": "[parameters('lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint')]",
 					"accountKind": "StorageV2"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lnk_adls_axiomstandardatalake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('lnk_adls_axiomstandardatalake_properties_typeProperties_url')]"
 				}
 			},
 			"dependsOn": []
