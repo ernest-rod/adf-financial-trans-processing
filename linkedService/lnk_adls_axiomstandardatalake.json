@@ -1,0 +1,10 @@
+{
+	"name": "lnk_adls_axiomstandardatalake",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://axiomstandarddatalake.dfs.core.windows.net"
+		}
+	}
+}
