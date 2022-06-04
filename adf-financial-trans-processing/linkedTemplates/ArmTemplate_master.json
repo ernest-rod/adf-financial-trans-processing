@@ -15,6 +15,10 @@
 			"type": "string",
 			"defaultValue": "https://axiomstandarddatalake.dfs.core.windows.net"
 		},
+		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -47,6 +51,9 @@
 					},
 					"lnk_adls_axiomstandardatalake_properties_typeProperties_url": {
 						"value": "[parameters('lnk_adls_axiomstandardatalake_properties_typeProperties_url')]"
+					},
+					"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
+						"value": "[parameters('trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope')]"
 					}
 				}
 			},
