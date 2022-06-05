@@ -1,0 +1,22 @@
+{
+	"name": "ds_csv_inbound_transaction_data_file_to_delete",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_abls_axiomstorage4inbounddata",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "transactions*",
+				"container": "inbounddatafiles"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

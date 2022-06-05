@@ -83,7 +83,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "ds_csv_inbound_transaction_data_file",
+						"referenceName": "ds_csv_inbound_transaction_data_file_to_delete",
 						"type": "DatasetReference"
 					},
 					"enableLogging": false,
