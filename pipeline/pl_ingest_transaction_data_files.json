@@ -90,7 +90,6 @@
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true,
-						"wildcardFileName": "inbounddatafiles\\transactions*",
 						"enablePartitionDiscovery": false
 					}
 				}
