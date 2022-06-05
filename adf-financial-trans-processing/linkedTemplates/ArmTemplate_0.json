@@ -119,7 +119,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "\"*.csv\"",
 						"container": "inbounddatafiles"
 					},
 					"columnDelimiter": ",",
@@ -229,6 +228,7 @@
 							"storeSettings": {
 								"type": "AzureBlobStorageReadSettings",
 								"recursive": false,
+								"wildcardFileName": "*.csv",
 								"enablePartitionDiscovery": false
 							}
 						}
