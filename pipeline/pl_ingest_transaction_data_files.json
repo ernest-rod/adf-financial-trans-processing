@@ -90,7 +90,7 @@
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true,
-						"wildcardFileName": " inbounddatafiles/transactions*",
+						"wildcardFileName": "*.csv",
 						"enablePartitionDiscovery": false
 					}
 				}
