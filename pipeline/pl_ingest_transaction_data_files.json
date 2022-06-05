@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Move Data File",
+				"name": "Move Transaction Data File",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -67,7 +67,7 @@
 				"type": "Delete",
 				"dependsOn": [
 					{
-						"activity": "Move Data File",
+						"activity": "Move Transaction Data File",
 						"dependencyConditions": [
 							"Succeeded"
 						]
