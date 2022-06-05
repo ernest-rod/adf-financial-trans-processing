@@ -62,7 +62,7 @@
 				]
 			},
 			{
-				"name": "Delete Data File",
+				"name": "Delete Transaction Data File",
 				"description": "Delete Transaction Data File from ingre location.",
 				"type": "Delete",
 				"dependsOn": [
@@ -82,7 +82,17 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableLogging": true
+					"dataset": {
+						"referenceName": "ds_csv_inbound_transaction_data_file",
+						"type": "DatasetReference"
+					},
+					"enableLogging": false,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"wildcardFileName": "transaction*",
+						"enablePartitionDiscovery": false
+					}
 				}
 			}
 		],
