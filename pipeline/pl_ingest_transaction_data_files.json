@@ -60,6 +60,30 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Delete Data File",
+				"description": "Delete Transaction Data File from ingre location.",
+				"type": "Delete",
+				"dependsOn": [
+					{
+						"activity": "Move Data File",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableLogging": true
+				}
 			}
 		],
 		"annotations": []
