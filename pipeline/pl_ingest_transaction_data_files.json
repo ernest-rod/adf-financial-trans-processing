@@ -91,7 +91,7 @@
 						"type": "AzureBlobStorageReadSettings",
 						"recursive": true,
 						"enablePartitionDiscovery": false,
-						"prefix": "transaction*"
+						"prefix": "transactions*"
 					}
 				}
 			}
