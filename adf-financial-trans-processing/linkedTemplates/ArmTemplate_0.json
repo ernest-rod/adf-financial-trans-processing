@@ -119,7 +119,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "transaction*",
+						"fileName": "*.csv",
 						"container": "inbounddatafiles"
 					},
 					"columnDelimiter": ",",
