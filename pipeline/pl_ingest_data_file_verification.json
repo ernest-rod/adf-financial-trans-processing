@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataset": {
-						"referenceName": "ds_csv_transactions",
+						"referenceName": "ds_csv_raw_transaction_data_file",
 						"type": "DatasetReference"
 					},
 					"timeout": "0.00:10:00",
