@@ -1,0 +1,22 @@
+{
+	"name": "pl_ingest_data_file_verification",
+	"properties": {
+		"activities": [
+			{
+				"name": "Check If File Exists",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_csv_raw_transaction_data_file",
+						"type": "DatasetReference"
+					},
+					"timeout": "0.00:10:00",
+					"sleep": 10
+				}
+			}
+		],
+		"annotations": []
+	}
+}
