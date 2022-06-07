@@ -69,7 +69,21 @@
 					"expression": {
 						"value": "@equals(activity('Get Metadata from Transactions File').output.columnCount, 13)",
 						"type": "Expression"
-					}
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Report Failure in Column Count",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "@concat('Coulumn count failed: count is ', string( activity('Get Metadata from Transactions File').output.columnCount) )",
+									"type": "Expression"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
