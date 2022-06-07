@@ -80,7 +80,8 @@
 								"message": {
 									"value": "@concat('Coulumn count failed: count is ', string( activity('Get Metadata from Transactions File').output.columnCount) )",
 									"type": "Expression"
-								}
+								},
+								"errorCode": "100"
 							}
 						}
 					]
