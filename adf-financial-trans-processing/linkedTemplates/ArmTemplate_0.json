@@ -119,7 +119,7 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": {
-							"value": "@concat(\n    'Transactions_',\n    substring( convertToUtc( utcnow(), 'US/Eastern' ), 0, 10),\n    '.csv'\n)",
+							"value": "@concat(\n    'Transactions_',\n    substring( convertToUtc( utcnow(), 'SA Western Standard Time' ), 0, 10),\n    '.csv'\n)",
 							"type": "Expression"
 						},
 						"folderPath": "transactions",
