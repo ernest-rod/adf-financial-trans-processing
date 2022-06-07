@@ -338,7 +338,7 @@
 						}
 					},
 					{
-						"name": "Get Metadata1",
+						"name": "Get Metadata from Transactions File",
 						"type": "GetMetadata",
 						"dependsOn": [
 							{
