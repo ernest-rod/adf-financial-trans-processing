@@ -1,0 +1,21 @@
+{
+	"name": "ds_raw_parquet_transaction_data_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_adls_axiomstandardatalake",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "trans_data.parquet",
+				"folderPath": "transactions/raw",
+				"fileSystem": "textdatafiles"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
