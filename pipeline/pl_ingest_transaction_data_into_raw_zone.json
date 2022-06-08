@@ -1,5 +1,5 @@
 {
-	"name": "pl_ingest_into_raw_zone",
+	"name": "pl_ingest_transaction_data_into_raw_zone",
 	"properties": {
 		"activities": [
 			{
