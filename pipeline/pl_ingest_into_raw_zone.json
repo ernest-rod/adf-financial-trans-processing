@@ -1,0 +1,9 @@
+{
+	"name": "pl_ingest_into_raw_zone",
+	"properties": {
+		"folder": {
+			"name": "Ingest"
+		},
+		"annotations": []
+	}
+}
