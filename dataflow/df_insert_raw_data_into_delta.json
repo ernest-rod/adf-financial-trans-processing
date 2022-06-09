@@ -8,6 +8,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "ds_raw_parquet_transaction_data_file",
+						"type": "DatasetReference"
+					},
 					"name": "SRCParquetRawTransactions"
 				}
 			],
@@ -15,7 +19,9 @@
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> SRCParquetRawTransactions"
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> SRCParquetRawTransactions"
 			]
 		}
 	}

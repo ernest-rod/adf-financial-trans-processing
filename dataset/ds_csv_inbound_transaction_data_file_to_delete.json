@@ -5,6 +5,9 @@
 			"referenceName": "lnk_abls_axiomstorage4inbounddata",
 			"type": "LinkedServiceReference"
 		},
+		"folder": {
+			"name": "Ingest"
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
