@@ -1,0 +1,9 @@
+{
+	"name": "pl_insert_raw_data_into_delta_lake",
+	"properties": {
+		"folder": {
+			"name": "Delta"
+		},
+		"annotations": []
+	}
+}
