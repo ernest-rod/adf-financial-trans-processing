@@ -61,6 +61,9 @@
 					"referenceName": "lnk_abls_axiomstorage4inbounddata",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Ingest"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -87,6 +90,9 @@
 					"referenceName": "lnk_abls_axiomstorage4inbounddata",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "Ingest"
+				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
@@ -112,6 +118,9 @@
 				"linkedServiceName": {
 					"referenceName": "lnk_adls_axiomstandardatalake",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Ingest"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -143,6 +152,9 @@
 				"linkedServiceName": {
 					"referenceName": "lnk_adls_axiomstandardatalake",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Ingest"
 				},
 				"annotations": [],
 				"type": "DelimitedText",
@@ -209,6 +221,9 @@
 				"linkedServiceName": {
 					"referenceName": "lnk_adls_axiomstandardatalake",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Ingest"
 				},
 				"annotations": [],
 				"type": "Parquet",
@@ -533,6 +548,66 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_insert_raw_data_into_delta')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Delta"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_raw_parquet_transaction_data_file",
+								"type": "DatasetReference"
+							},
+							"name": "SRCParquetRawTransactions"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "lnk_adls_axiomstandardatalake",
+								"type": "LinkedServiceReference"
+							},
+							"name": "DSTStagingParquetRawTransactions"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> SRCParquetRawTransactions",
+						"SRCParquetRawTransactions sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delta',",
+						"     fileSystem: 'textdatafiles',",
+						"     folderPath: 'transactions/staging/transaction_data',",
+						"     mergeSchema: false,",
+						"     autoCompact: false,",
+						"     optimizedWrite: false,",
+						"     vacuum: 0,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> DSTStagingParquetRawTransactions"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/trg_sevnt_axiomstorage4inbounddata_inbounddatafiles')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -561,6 +636,56 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/pl_ingest_transaction_data_files')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_insert_raw_data_into_delta_lake')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Insert Raw Transactions Into Delta",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_insert_raw_data_into_delta",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SRCParquetRawTransactions": {},
+									"DSTStagingParquetRawTransactions": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Delta"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_insert_raw_data_into_delta')]"
 			]
 		}
 	]
