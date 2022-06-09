@@ -15,13 +15,21 @@
 					"name": "SRCParquetRawTransactions"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "DSTStagingParquetRawTransactions"
+				}
+			],
 			"transformations": [],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> SRCParquetRawTransactions"
+				"     format: 'parquet') ~> SRCParquetRawTransactions",
+				"SRCParquetRawTransactions sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DSTStagingParquetRawTransactions"
 			]
 		}
 	}
