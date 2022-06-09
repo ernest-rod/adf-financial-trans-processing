@@ -1,6 +1,32 @@
 {
 	"name": "pl_insert_raw_data_into_delta_lake",
 	"properties": {
+		"activities": [
+			{
+				"name": "Insert Raw Transactions Into Delta",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "1.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_insert_raw_data_into_delta",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
 		"folder": {
 			"name": "Delta"
 		},
