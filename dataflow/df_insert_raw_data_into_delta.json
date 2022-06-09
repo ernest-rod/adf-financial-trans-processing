@@ -1,0 +1,17 @@
+{
+	"name": "df_insert_raw_data_into_delta",
+	"properties": {
+		"folder": {
+			"name": "Delta"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				""
+			]
+		}
+	}
+}
