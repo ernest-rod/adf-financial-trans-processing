@@ -17,6 +17,10 @@
 			],
 			"sinks": [
 				{
+					"linkedService": {
+						"referenceName": "lnk_adls_axiomstandardatalake",
+						"type": "LinkedServiceReference"
+					},
 					"name": "DSTStagingParquetRawTransactions"
 				}
 			],
@@ -28,6 +32,20 @@
 				"     format: 'parquet') ~> SRCParquetRawTransactions",
 				"SRCParquetRawTransactions sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'textdatafiles',",
+				"     folderPath: 'transactions/staging/transaction_data',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> DSTStagingParquetRawTransactions"
 			]
