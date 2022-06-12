@@ -18,7 +18,7 @@
 			"sinks": [],
 			"transformations": [
 				{
-					"name": "AddLoadDate"
+					"name": "AddLoadDateColumn"
 				}
 			],
 			"scriptLines": [
@@ -28,7 +28,7 @@
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
 				"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta",
-				"SRCParquetRawTransactionsInDelta derive(load_date = currentDate()) ~> AddLoadDate"
+				"SRCParquetRawTransactionsInDelta derive(load_date = currentDate()) ~> AddLoadDateColumn"
 			]
 		}
 	}
