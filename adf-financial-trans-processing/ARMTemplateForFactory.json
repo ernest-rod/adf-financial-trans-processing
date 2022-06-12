@@ -716,7 +716,7 @@
 								"parameters": {},
 								"datasetParameters": {
 									"SourceParquetRawTransactionsInDelta": {},
-									"SinkUpdatedDataIntoDelta": {}
+									"UpdateDeltaTransactions": {}
 								}
 							},
 							"staging": {},
@@ -766,7 +766,7 @@
 								"referenceName": "lnk_adls_axiomstandardatalake",
 								"type": "LinkedServiceReference"
 							},
-							"name": "SinkUpdatedDataIntoDelta"
+							"name": "UpdateDeltaTransactions"
 						}
 					],
 					"transformations": [
@@ -815,6 +815,17 @@
 						"AddLoadDate alterRow(updateIf(true())) ~> UpdateRows",
 						"UpdateRows sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     input(",
+						"          Prop_0 as string,",
+						"          Prop_1 as string,",
+						"          Prop_2 as string,",
+						"          Prop_3 as string,",
+						"          Prop_4 as string,",
+						"          Prop_5 as string,",
+						"          Prop_6 as string,",
+						"          Prop_7 as string,",
+						"          Prop_8 as string",
+						"     ),",
 						"     format: 'delta',",
 						"     fileSystem: 'textdatafiles',",
 						"     folderPath: 'transactions/staging/transaction_data',",
@@ -826,24 +837,23 @@
 						"     insertable:false,",
 						"     updateable:true,",
 						"     upsertable:false,",
-						"     keys:['date','description','original_description','amount','transaction_type','category','account_name'],",
+						"     keys:['date','description','original_description','amount','transaction_type','category','account_name','labels','notes'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     mapColumn(",
-						"          date,",
-						"          description,",
-						"          original_description,",
-						"          amount,",
-						"          transaction_type,",
-						"          category,",
-						"          account_name,",
-						"          labels,",
-						"          notes,",
-						"          load_date",
-						"     )) ~> SinkUpdatedDataIntoDelta"
+						"          Prop_0 = date,",
+						"          Prop_1 = description,",
+						"          Prop_2 = original_description,",
+						"          Prop_3 = amount,",
+						"          Prop_4 = transaction_type,",
+						"          Prop_5 = category,",
+						"          Prop_6 = account_name,",
+						"          Prop_7 = labels,",
+						"          Prop_8 = notes",
+						"     )) ~> UpdateDeltaTransactions"
 					]
 				}
 			},
