@@ -259,7 +259,7 @@
 								"referenceName": "lnk_adls_axiomstandardatalake",
 								"type": "LinkedServiceReference"
 							},
-							"name": "SRCParquetRawTransactionsInDelta"
+							"name": "SourceParquetRawTransactionsInDelta"
 						}
 					],
 					"sinks": [
@@ -268,12 +268,18 @@
 								"referenceName": "lnk_adls_axiomstandardatalake",
 								"type": "LinkedServiceReference"
 							},
-							"name": "sink1"
+							"name": "SinkUpdatedDataIntoDelta"
 						}
 					],
 					"transformations": [
 						{
-							"name": "SELECTAllCoumns"
+							"name": "SelectAllCoumns"
+						},
+						{
+							"name": "AddLoadDate"
+						},
+						{
+							"name": "UpdateRows"
 						}
 					],
 					"scriptLines": [
@@ -293,8 +299,8 @@
 						"     ignoreNoFilesFound: false,",
 						"     format: 'delta',",
 						"     fileSystem: 'textdatafiles',",
-						"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta",
-						"SRCParquetRawTransactionsInDelta select(mapColumn(",
+						"     folderPath: 'transactions/staging/transaction_data') ~> SourceParquetRawTransactionsInDelta",
+						"SourceParquetRawTransactionsInDelta select(mapColumn(",
 						"          date = Prop_0,",
 						"          description = Prop_1,",
 						"          original_description = Prop_2,",
@@ -306,8 +312,10 @@
 						"          notes = Prop_8",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SELECTAllCoumns",
-						"SELECTAllCoumns sink(allowSchemaDrift: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectAllCoumns",
+						"SelectAllCoumns derive(load_date = currentDate()) ~> AddLoadDate",
+						"AddLoadDate alterRow(updateIf(true())) ~> UpdateRows",
+						"UpdateRows sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'delta',",
 						"     fileSystem: 'textdatafiles',",
@@ -317,14 +325,15 @@
 						"     optimizedWrite: false,",
 						"     vacuum: 0,",
 						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
 						"     upsertable:false,",
+						"     keys:['date','description','original_description','amount','transaction_type','category','account_name'],",
 						"     umask: 0022,",
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
+						"     skipDuplicateMapOutputs: true) ~> SinkUpdatedDataIntoDelta"
 					]
 				}
 			},
@@ -723,8 +732,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"SRCParquetRawTransactionsInDelta": {},
-									"sink1": {}
+									"SourceParquetRawTransactionsInDelta": {},
+									"SinkUpdatedDataIntoDelta": {}
 								}
 							},
 							"staging": {},
