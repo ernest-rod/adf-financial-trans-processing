@@ -1,0 +1,60 @@
+{
+	"name": "ds_transactions_in_delta_stage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_adls_axiomstandardatalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Delta"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "transactions/staging/transaction_data",
+				"fileSystem": "textdatafiles"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "Prop_0",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_1",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_2",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_3",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_4",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_5",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_6",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_7",
+				"type": "UTF8"
+			},
+			{
+				"name": "Prop_8",
+				"type": "UTF8"
+			}
+		]
+	}
+}
