@@ -586,6 +586,7 @@
 						"     format: 'delta',",
 						"     fileSystem: 'textdatafiles',",
 						"     folderPath: 'transactions/staging/transaction_data',",
+						"     truncate:true,",
 						"     mergeSchema: false,",
 						"     autoCompact: false,",
 						"     optimizedWrite: false,",
@@ -605,37 +606,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trg_sevnt_axiomstorage4inbounddata_inbounddatafiles')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_ingest_transaction_data_files",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
-				"typeProperties": {
-					"blobPathBeginsWith": "/inbounddatafiles/blobs/",
-					"blobPathEndsWith": ".csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_ingest_transaction_data_files')]"
 			]
 		},
 		{
@@ -686,6 +656,37 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_insert_raw_data_into_delta')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trg_sevnt_axiomstorage4inbounddata_inbounddatafiles')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pl_ingest_transaction_data_files",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/inbounddatafiles/blobs/",
+					"blobPathEndsWith": ".csv",
+					"ignoreEmptyBlobs": true,
+					"scope": "[parameters('trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pl_ingest_transaction_data_files')]"
 			]
 		}
 	]
