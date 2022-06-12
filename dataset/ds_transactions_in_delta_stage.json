@@ -13,7 +13,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": "transactions/staging/transaction_data",
+				"fileName": "trans_data.parquet",
+				"folderPath": "transactions/raw",
 				"fileSystem": "textdatafiles"
 			},
 			"compressionCodec": "snappy"
