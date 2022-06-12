@@ -16,14 +16,19 @@
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "AddLoadDate"
+				}
+			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
-				"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta"
+				"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta",
+				"SRCParquetRawTransactionsInDelta derive(load_date = currentDate()) ~> AddLoadDate"
 			]
 		}
 	}
