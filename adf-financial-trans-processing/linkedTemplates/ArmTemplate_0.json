@@ -73,6 +73,7 @@
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
+					"firstRowAsHeader": false,
 					"quoteChar": "\""
 				},
 				"schema": []
@@ -243,6 +244,95 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_update_raw_data_in_delta')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Delta"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"linkedService": {
+								"referenceName": "lnk_adls_axiomstandardatalake",
+								"type": "LinkedServiceReference"
+							},
+							"name": "SRCParquetRawTransactionsInDelta"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "lnk_adls_axiomstandardatalake",
+								"type": "LinkedServiceReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SELECTAllCoumns"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          Prop_0 as string,",
+						"          Prop_1 as string,",
+						"          Prop_2 as string,",
+						"          Prop_3 as string,",
+						"          Prop_4 as string,",
+						"          Prop_5 as string,",
+						"          Prop_6 as string,",
+						"          Prop_7 as string,",
+						"          Prop_8 as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'delta',",
+						"     fileSystem: 'textdatafiles',",
+						"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta",
+						"SRCParquetRawTransactionsInDelta select(mapColumn(",
+						"          date = Prop_0,",
+						"          description = Prop_1,",
+						"          original_description = Prop_2,",
+						"          amount = Prop_3,",
+						"          transaction_type = Prop_4,",
+						"          category = Prop_5,",
+						"          account_name = Prop_6,",
+						"          labels = Prop_7,",
+						"          notes = Prop_8",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SELECTAllCoumns",
+						"SELECTAllCoumns sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delta',",
+						"     fileSystem: 'textdatafiles',",
+						"     folderPath: 'transactions/staging/transaction_data',",
+						"     mergeSchema: false,",
+						"     autoCompact: false,",
+						"     optimizedWrite: false,",
+						"     vacuum: 0,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_ingest_data_file_verification')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -378,7 +468,8 @@
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 1
 								}
 							},
 							"sink": {
@@ -606,6 +697,56 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_update_raw_data_from_data_lake')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Update Raw Transactions In Delta",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_update_raw_data_in_delta",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SRCParquetRawTransactionsInDelta": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Delta"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_update_raw_data_in_delta')]"
 			]
 		},
 		{
