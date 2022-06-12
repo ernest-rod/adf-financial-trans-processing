@@ -12,7 +12,7 @@
 						"referenceName": "ds_raw_parquet_transaction_data_file",
 						"type": "DatasetReference"
 					},
-					"name": "SRCParquetRawTransactions"
+					"name": "SourceParquetRawTransactions"
 				}
 			],
 			"sinks": [
@@ -21,7 +21,7 @@
 						"referenceName": "lnk_adls_axiomstandardatalake",
 						"type": "LinkedServiceReference"
 					},
-					"name": "DSTStagingParquetRawTransactions"
+					"name": "DestinationStagingParquetRawTransactions"
 				}
 			],
 			"transformations": [],
@@ -29,8 +29,8 @@
 				"source(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     format: 'parquet') ~> SRCParquetRawTransactions",
-				"SRCParquetRawTransactions sink(allowSchemaDrift: true,",
+				"     format: 'parquet') ~> SourceParquetRawTransactions",
+				"SourceParquetRawTransactions sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
@@ -48,7 +48,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DSTStagingParquetRawTransactions"
+				"     skipDuplicateMapOutputs: true) ~> DestinationStagingParquetRawTransactions"
 			]
 		}
 	}
