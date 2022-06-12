@@ -35,6 +35,7 @@
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
 				"     folderPath: 'transactions/staging/transaction_data',",
+				"     truncate:true,",
 				"     mergeSchema: false,",
 				"     autoCompact: false,",
 				"     optimizedWrite: false,",
