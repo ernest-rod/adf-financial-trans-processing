@@ -26,9 +26,6 @@
 			],
 			"transformations": [
 				{
-					"name": "AddLoadDateColumn"
-				},
-				{
 					"name": "SELECTAllCoumns"
 				}
 			],
@@ -50,7 +47,6 @@
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
 				"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta",
-				"SELECTAllCoumns derive(load_date = currentDate()) ~> AddLoadDateColumn",
 				"SRCParquetRawTransactionsInDelta select(mapColumn(",
 				"          date = Prop_0,",
 				"          description = Prop_1,",
@@ -64,7 +60,7 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SELECTAllCoumns",
-				"AddLoadDateColumn sink(allowSchemaDrift: true,",
+				"SELECTAllCoumns sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
