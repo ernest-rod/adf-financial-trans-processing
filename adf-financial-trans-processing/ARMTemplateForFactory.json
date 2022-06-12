@@ -837,11 +837,14 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "ParquetSource",
+								"type": "DelimitedTextSource",
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
 									"recursive": true,
 									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
 								}
 							},
 							"sink": {
@@ -857,9 +860,7 @@
 								"mappings": [
 									{
 										"source": {
-											"name": "Prop_0",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Date"
 										},
 										"sink": {
 											"name": "trans_date",
@@ -869,9 +870,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_1",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Description"
 										},
 										"sink": {
 											"name": "trans_desc",
@@ -881,9 +880,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_2",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Original Description"
 										},
 										"sink": {
 											"name": "trans_original_desc",
@@ -893,9 +890,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_3",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Amount"
 										},
 										"sink": {
 											"name": "trans_amount",
@@ -907,9 +902,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_4",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Transaction Type"
 										},
 										"sink": {
 											"name": "trans_type",
@@ -919,9 +912,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_5",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Category"
 										},
 										"sink": {
 											"name": "trans_category",
@@ -931,9 +922,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_6",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Account Name"
 										},
 										"sink": {
 											"name": "trans_account_name",
@@ -943,9 +932,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_7",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Labels"
 										},
 										"sink": {
 											"name": "trans_label",
@@ -955,9 +942,7 @@
 									},
 									{
 										"source": {
-											"name": "Prop_8",
-											"type": "String",
-											"physicalType": "UTF8"
+											"name": "Notes"
 										},
 										"sink": {
 											"name": "trans_notes",
@@ -975,7 +960,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "ds_transactions_in_delta_stage",
+								"referenceName": "ds_csv_transactions",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -999,7 +984,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_transactions_in_delta_stage')]",
+				"[concat(variables('factoryId'), '/datasets/ds_csv_transactions')]",
 				"[concat(variables('factoryId'), '/datasets/ds_poseidon_bank_stage_table')]"
 			]
 		},
