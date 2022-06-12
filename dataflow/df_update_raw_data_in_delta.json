@@ -12,7 +12,7 @@
 						"referenceName": "lnk_adls_axiomstandardatalake",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SRCParquetRawTransactionsInDelta"
+					"name": "SourceParquetRawTransactionsInDelta"
 				}
 			],
 			"sinks": [
@@ -21,12 +21,15 @@
 						"referenceName": "lnk_adls_axiomstandardatalake",
 						"type": "LinkedServiceReference"
 					},
-					"name": "sink1"
+					"name": "SinkUpdatedDataintoDelta"
 				}
 			],
 			"transformations": [
 				{
-					"name": "SELECTAllCoumns"
+					"name": "SelectAllCoumns"
+				},
+				{
+					"name": "AddLoadDate"
 				}
 			],
 			"scriptLines": [
@@ -46,8 +49,8 @@
 				"     ignoreNoFilesFound: false,",
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
-				"     folderPath: 'transactions/staging/transaction_data') ~> SRCParquetRawTransactionsInDelta",
-				"SRCParquetRawTransactionsInDelta select(mapColumn(",
+				"     folderPath: 'transactions/staging/transaction_data') ~> SourceParquetRawTransactionsInDelta",
+				"SourceParquetRawTransactionsInDelta select(mapColumn(",
 				"          date = Prop_0,",
 				"          description = Prop_1,",
 				"          original_description = Prop_2,",
@@ -59,8 +62,9 @@
 				"          notes = Prop_8",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SELECTAllCoumns",
-				"SELECTAllCoumns sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectAllCoumns",
+				"SelectAllCoumns derive(load_date = currentDate()) ~> AddLoadDate",
+				"AddLoadDate sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
@@ -77,7 +81,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> SinkUpdatedDataintoDelta"
 			]
 		}
 	}
