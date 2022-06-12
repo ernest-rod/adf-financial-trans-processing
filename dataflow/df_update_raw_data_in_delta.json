@@ -21,7 +21,7 @@
 						"referenceName": "lnk_adls_axiomstandardatalake",
 						"type": "LinkedServiceReference"
 					},
-					"name": "SinkUpdatedDataintoDelta"
+					"name": "SinkUpdatedDataIntoDelta"
 				}
 			],
 			"transformations": [
@@ -74,14 +74,14 @@
 				"     optimizedWrite: false,",
 				"     vacuum: 0,",
 				"     deletable:false,",
-				"     insertable:true,",
-				"     updateable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
 				"     upsertable:false,",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SinkUpdatedDataintoDelta"
+				"     skipDuplicateMapOutputs: true) ~> SinkUpdatedDataIntoDelta"
 			]
 		}
 	}
