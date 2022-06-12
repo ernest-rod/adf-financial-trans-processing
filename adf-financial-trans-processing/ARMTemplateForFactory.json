@@ -354,8 +354,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"SRCParquetRawTransactions": {},
-									"DSTStagingParquetRawTransactions": {}
+									"SourceParquetRawTransactions": {},
+									"DestinationStagingParquetRawTransactions": {}
 								}
 							},
 							"staging": {},
@@ -646,7 +646,7 @@
 								"referenceName": "ds_raw_parquet_transaction_data_file",
 								"type": "DatasetReference"
 							},
-							"name": "SRCParquetRawTransactions"
+							"name": "SourceParquetRawTransactions"
 						}
 					],
 					"sinks": [
@@ -655,7 +655,7 @@
 								"referenceName": "lnk_adls_axiomstandardatalake",
 								"type": "LinkedServiceReference"
 							},
-							"name": "DSTStagingParquetRawTransactions"
+							"name": "DestinationStagingParquetRawTransactions"
 						}
 					],
 					"transformations": [],
@@ -663,8 +663,8 @@
 						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet') ~> SRCParquetRawTransactions",
-						"SRCParquetRawTransactions sink(allowSchemaDrift: true,",
+						"     format: 'parquet') ~> SourceParquetRawTransactions",
+						"SourceParquetRawTransactions sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     format: 'delta',",
 						"     fileSystem: 'textdatafiles',",
@@ -682,63 +682,13 @@
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> DSTStagingParquetRawTransactions"
+						"     skipDuplicateMapOutputs: true) ~> DestinationStagingParquetRawTransactions"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_update_raw_data_from_data_lake')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Update Raw Transactions In Delta",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_update_raw_data_in_delta",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SourceParquetRawTransactionsInDelta": {},
-									"UpdateDeltaTransactions": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "Delta"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_update_raw_data_in_delta')]"
 			]
 		},
 		{
@@ -829,13 +779,14 @@
 						"     format: 'delta',",
 						"     fileSystem: 'textdatafiles',",
 						"     folderPath: 'transactions/staging/transaction_data',",
+						"     truncate:true,",
 						"     mergeSchema: false,",
 						"     autoCompact: false,",
 						"     optimizedWrite: false,",
 						"     vacuum: 0,",
 						"     deletable:false,",
-						"     insertable:false,",
-						"     updateable:true,",
+						"     insertable:true,",
+						"     updateable:false,",
 						"     upsertable:false,",
 						"     keys:['date','description','original_description','amount','transaction_type','category','account_name','labels','notes'],",
 						"     umask: 0022,",
