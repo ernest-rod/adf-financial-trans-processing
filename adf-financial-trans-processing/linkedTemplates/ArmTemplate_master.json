@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-financial-trans-processing"
 		},
+		"lnk_poseidon_database_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
+		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://axiomstorage4inbounddata.blob.core.windows.net"
@@ -45,6 +49,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"lnk_poseidon_database_connectionString": {
+						"value": "[parameters('lnk_poseidon_database_connectionString')]"
 					},
 					"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint')]"

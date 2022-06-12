@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "adf-financial-trans-processing"
 		},
+		"lnk_poseidon_database_connectionString": {
+			"value": ""
+		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"value": "https://axiomstorage4inbounddata.blob.core.windows.net"
 		},

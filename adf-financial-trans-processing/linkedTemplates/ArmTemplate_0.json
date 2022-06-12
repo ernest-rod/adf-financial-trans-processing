@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-financial-trans-processing"
 		},
+		"lnk_poseidon_database_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
+		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://axiomstorage4inbounddata.blob.core.windows.net"
@@ -48,6 +52,19 @@
 				"type": "AzureBlobFS",
 				"typeProperties": {
 					"url": "[parameters('lnk_adls_axiomstandardatalake_properties_typeProperties_url')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lnk_poseidon_database')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('lnk_poseidon_database_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -362,6 +379,149 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_transactions_in_delta_stage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Delta"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "trans_data.parquet",
+						"folderPath": "transactions/raw",
+						"fileSystem": "textdatafiles"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "Prop_0",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_1",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_2",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_3",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_4",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_5",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_6",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_7",
+						"type": "UTF8"
+					},
+					{
+						"name": "Prop_8",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_poseidon_bank_stage_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lnk_poseidon_database",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "trans_key",
+						"type": "binary"
+					},
+					{
+						"name": "trans_load_timestamp",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "trans_record_source",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_date",
+						"type": "date"
+					},
+					{
+						"name": "trans_desc",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_original_desc",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_amount",
+						"type": "smallmoney",
+						"precision": 10,
+						"scale": 4
+					},
+					{
+						"name": "trans_type",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_category",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_account_name",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_label",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_notes",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "bank",
+					"table": "stage_transactions"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_poseidon_database')]"
 			]
 		},
 		{
@@ -729,6 +889,192 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_load_trans_into_staging_area')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Load Data Into Staging Table",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE bank.stage_transactions",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Prop_0",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_date",
+											"type": "DateTime",
+											"physicalType": "date"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_1",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_desc",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_2",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_original_desc",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_3",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_amount",
+											"type": "Decimal",
+											"physicalType": "smallmoney",
+											"scale": 4,
+											"precision": 10
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_4",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_type",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_5",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_category",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_6",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_account_name",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_7",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_label",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Prop_8",
+											"type": "String",
+											"physicalType": "UTF8"
+										},
+										"sink": {
+											"name": "trans_notes",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_transactions_in_delta_stage",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_poseidon_bank_stage_table",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Database"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_transactions_in_delta_stage')]",
+				"[concat(variables('factoryId'), '/datasets/ds_poseidon_bank_stage_table')]"
 			]
 		},
 		{
