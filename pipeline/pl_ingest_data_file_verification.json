@@ -67,7 +67,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(activity('Get Metadata from Transactions File').output.columnCount, 9)",
+						"value": "@greater(activity('Get Metadata from Transactions File').output.columnCount, 7)",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [
