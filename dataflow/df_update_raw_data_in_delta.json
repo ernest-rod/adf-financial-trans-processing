@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "AddLoadDate"
+				},
+				{
+					"name": "UpdateRows"
 				}
 			],
 			"scriptLines": [
@@ -64,7 +67,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectAllCoumns",
 				"SelectAllCoumns derive(load_date = currentDate()) ~> AddLoadDate",
-				"AddLoadDate sink(allowSchemaDrift: true,",
+				"AddLoadDate alterRow(updateIf(true())) ~> UpdateRows",
+				"UpdateRows sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     format: 'delta',",
 				"     fileSystem: 'textdatafiles',",
@@ -77,6 +81,7 @@
 				"     insertable:false,",
 				"     updateable:true,",
 				"     upsertable:false,",
+				"     keys:['date','description','original_description','amount','transaction_type','category','account_name'],",
 				"     umask: 0022,",
 				"     preCommands: [],",
 				"     postCommands: [],",
