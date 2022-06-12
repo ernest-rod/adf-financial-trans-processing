@@ -1,0 +1,9 @@
+{
+	"name": "pl_load_trans_into_staging_area",
+	"properties": {
+		"folder": {
+			"name": "Database"
+		},
+		"annotations": []
+	}
+}
