@@ -86,7 +86,19 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> SinkUpdatedDataIntoDelta"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          date,",
+				"          description,",
+				"          original_description,",
+				"          amount,",
+				"          transaction_type,",
+				"          category,",
+				"          account_name,",
+				"          labels,",
+				"          notes,",
+				"          load_date",
+				"     )) ~> SinkUpdatedDataIntoDelta"
 			]
 		}
 	}
