@@ -233,6 +233,83 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_poseidon_bank_stage_table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lnk_poseidon_database",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Database"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "trans_key",
+						"type": "binary"
+					},
+					{
+						"name": "trans_load_timestamp",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "trans_record_source",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_date",
+						"type": "date"
+					},
+					{
+						"name": "trans_desc",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_original_desc",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_amount",
+						"type": "smallmoney",
+						"precision": 10,
+						"scale": 4
+					},
+					{
+						"name": "trans_type",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_category",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_account_name",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_label",
+						"type": "varchar"
+					},
+					{
+						"name": "trans_notes",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "bank",
+					"table": "stage_transactions"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_poseidon_database')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_raw_parquet_transaction_data_file')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -380,149 +457,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_transactions_in_delta_stage')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Delta"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "trans_data.parquet",
-						"folderPath": "transactions/raw",
-						"fileSystem": "textdatafiles"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": [
-					{
-						"name": "Prop_0",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_1",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_2",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_3",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_4",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_5",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_6",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_7",
-						"type": "UTF8"
-					},
-					{
-						"name": "Prop_8",
-						"type": "UTF8"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_poseidon_bank_stage_table')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_poseidon_database",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Database"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "trans_key",
-						"type": "binary"
-					},
-					{
-						"name": "trans_load_timestamp",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "trans_record_source",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_date",
-						"type": "date"
-					},
-					{
-						"name": "trans_desc",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_original_desc",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_amount",
-						"type": "smallmoney",
-						"precision": 10,
-						"scale": 4
-					},
-					{
-						"name": "trans_type",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_category",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_account_name",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_label",
-						"type": "varchar"
-					},
-					{
-						"name": "trans_notes",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "bank",
-					"table": "stage_transactions"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_poseidon_database')]"
 			]
 		},
 		{
@@ -832,67 +766,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_insert_raw_data_into_delta')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "Delta"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_raw_parquet_transaction_data_file",
-								"type": "DatasetReference"
-							},
-							"name": "SourceParquetRawTransactions"
-						}
-					],
-					"sinks": [
-						{
-							"linkedService": {
-								"referenceName": "lnk_adls_axiomstandardatalake",
-								"type": "LinkedServiceReference"
-							},
-							"name": "DestinationStagingParquetRawTransactions"
-						}
-					],
-					"transformations": [],
-					"scriptLines": [
-						"source(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false,",
-						"     format: 'parquet') ~> SourceParquetRawTransactions",
-						"SourceParquetRawTransactions sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     format: 'delta',",
-						"     fileSystem: 'textdatafiles',",
-						"     folderPath: 'transactions/staging/transaction_data',",
-						"     truncate:true,",
-						"     mergeSchema: false,",
-						"     autoCompact: false,",
-						"     optimizedWrite: false,",
-						"     vacuum: 0,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> DestinationStagingParquetRawTransactions"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/pl_load_trans_into_staging_area')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1064,6 +937,67 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_insert_raw_data_into_delta')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Delta"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_raw_parquet_transaction_data_file",
+								"type": "DatasetReference"
+							},
+							"name": "SourceParquetRawTransactions"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "lnk_adls_axiomstandardatalake",
+								"type": "LinkedServiceReference"
+							},
+							"name": "DestinationStagingParquetRawTransactions"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     format: 'parquet') ~> SourceParquetRawTransactions",
+						"SourceParquetRawTransactions sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'delta',",
+						"     fileSystem: 'textdatafiles',",
+						"     folderPath: 'transactions/staging/transaction_data',",
+						"     truncate:true,",
+						"     mergeSchema: false,",
+						"     autoCompact: false,",
+						"     optimizedWrite: false,",
+						"     vacuum: 0,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> DestinationStagingParquetRawTransactions"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_raw_parquet_transaction_data_file')]",
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_insert_raw_data_into_delta_lake')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1119,7 +1053,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
