@@ -20,7 +20,7 @@
 				"folderPath": "transactions",
 				"fileSystem": "textdatafiles"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "|",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
