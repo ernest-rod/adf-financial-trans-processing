@@ -1,6 +1,7 @@
 {
 	"name": "pl_ingest_transaction_data_files",
 	"properties": {
+		"description": "Gets data file from blob account and move it into the data lake, after that the file in the blob account is deleted.",
 		"activities": [
 			{
 				"name": "Move Transaction Data File",
