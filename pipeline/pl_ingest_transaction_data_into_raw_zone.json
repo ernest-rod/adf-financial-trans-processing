@@ -5,7 +5,14 @@
 			{
 				"name": "Copy Transaction Data File Into Raw Zone",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Create Copy of Data File",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 0,
@@ -164,6 +171,39 @@
 				"outputs": [
 					{
 						"referenceName": "ds_raw_parquet_transaction_data_file",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Create Copy of Data File",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_csv_raw_transaction_data_file",
 						"type": "DatasetReference"
 					}
 				]
