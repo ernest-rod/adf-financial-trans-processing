@@ -38,6 +38,19 @@
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "\"Date\",\"Description\",\"Original Description\",\"Amount\",\"Transaction Type\",\"Category\",\"Account Name\",\"Labels\",\"Notes\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "\"Date\",\"Description\",\"OriginalDescription\",\"Amount\",\"TransactionType\",\"Category\",\"AccountName\",\"Labels\",\"Notes\"",
+									"physicalType": "UTF8"
+								}
+							}
+						],
 						"typeConversion": true,
 						"typeConversionSettings": {
 							"allowDataTruncation": true,
