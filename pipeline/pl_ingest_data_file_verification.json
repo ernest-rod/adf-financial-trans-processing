@@ -1,6 +1,7 @@
 {
 	"name": "pl_ingest_data_file_verification",
 	"properties": {
+		"description": "After being moved to the data lake, this process verifies the transaction data file.",
 		"activities": [
 			{
 				"name": "Check If File Exists",
