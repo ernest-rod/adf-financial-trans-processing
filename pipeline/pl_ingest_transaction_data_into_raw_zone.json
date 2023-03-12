@@ -199,11 +199,143 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Date",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Date",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Description",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Original Description",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "OriginalDescription",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Amount",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Amount",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Transaction Type",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TransactionType",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Category",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Account Name",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "AccountName",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Labels",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Labels",
+									"type": "String",
+									"physicalType": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Notes",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Notes",
+									"type": "String",
+									"physicalType": "String"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
 						"referenceName": "ds_csv_raw_transaction_data_file",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_csv_raw_transaction_data_file_piped_copy",
 						"type": "DatasetReference"
 					}
 				]
