@@ -1,0 +1,30 @@
+{
+	"name": "ds_csv_raw_transaction_data_file_piped_copy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_adls_axiomstandardatalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Ingest"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "piped_transactions.csv",
+					"type": "Expression"
+				},
+				"folderPath": "transactions",
+				"fileSystem": "textdatafiles"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
