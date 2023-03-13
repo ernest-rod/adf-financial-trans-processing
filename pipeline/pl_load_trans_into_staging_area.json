@@ -173,7 +173,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": ";\r\nWITH trans\r\nAS\r\n(\r\nSELECT\r\n\tROW_NUMBER() OVER(PARTITION BY trans_date ORDER BY(SELECT NULL)) AS trans_number\r\n\t,trans_id\r\n    ,trans_date\r\n\r\nFROM \r\n\tbank.stage_transactions\r\n)\r\nUPDATE trans\r\nSET trans_id = REPLACE( CAST(trans_date AS VARCHAR), '-', '') + CAST(trans_number AS VARCHAR)\r\n;\r\n",
+						"sqlReaderQuery": ";\r\nWITH trans\r\nAS\r\n(\r\nSELECT\r\n\tROW_NUMBER() OVER(PARTITION BY trans_date ORDER BY(SELECT NULL)) AS trans_number\r\n\t,trans_id\r\n    ,trans_date\r\n\r\nFROM \r\n\tbank.stage_transactions\r\n)\r\nUPDATE trans\r\nSET trans_id = REPLACE( CAST(trans_date AS VARCHAR), '-', '') + CAST(trans_number AS VARCHAR)\r\n;\r\n\r\nSELECT * FROM bank.stage_transactions;\r\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
