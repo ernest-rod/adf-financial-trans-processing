@@ -1,6 +1,7 @@
 {
 	"name": "pl_load_trans_into_staging_area",
 	"properties": {
+		"description": "Load transactions in data file into the stage table.",
 		"activities": [
 			{
 				"name": "Load Data Into Staging Table",
