@@ -1,6 +1,7 @@
 {
 	"name": "pl_insert_raw_data_into_delta_lake",
 	"properties": {
+		"description": "Takes parquet data file and the delta lake.",
 		"activities": [
 			{
 				"name": "Insert Raw Transactions Into Delta",
