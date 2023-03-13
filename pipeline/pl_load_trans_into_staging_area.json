@@ -181,7 +181,7 @@
 						"referenceName": "ds_poseidon_bank_stage_table",
 						"type": "DatasetReference"
 					},
-					"firstRowOnly": false
+					"firstRowOnly": true
 				}
 			}
 		],
