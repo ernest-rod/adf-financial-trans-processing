@@ -152,7 +152,7 @@
 				]
 			},
 			{
-				"name": "Lookup1",
+				"name": "Update Transaction ID",
 				"type": "Lookup",
 				"dependsOn": [
 					{
