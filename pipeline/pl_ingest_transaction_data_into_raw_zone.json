@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Create Copy of Data File",
+						"activity": "Create Piped Copy of Data File",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -72,12 +72,12 @@
 							},
 							{
 								"source": {
-									"name": "Original Description",
+									"name": "OriginalDescription",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Original Description",
+									"name": "OriginalDescription",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -96,12 +96,12 @@
 							},
 							{
 								"source": {
-									"name": "Transaction Type",
+									"name": "TransactionType",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Transaction Type",
+									"name": "TransactionType",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -120,12 +120,12 @@
 							},
 							{
 								"source": {
-									"name": "Account Name",
+									"name": "AccountName",
 									"type": "String",
 									"physicalType": "String"
 								},
 								"sink": {
-									"name": "Account Name",
+									"name": "AccountName",
 									"type": "String",
 									"physicalType": "UTF8"
 								}
@@ -164,7 +164,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_csv_raw_transaction_data_file",
+						"referenceName": "ds_csv_raw_transaction_data_file_piped_copy",
 						"type": "DatasetReference"
 					}
 				],
@@ -176,7 +176,7 @@
 				]
 			},
 			{
-				"name": "Create Copy of Data File",
+				"name": "Create Piped Copy of Data File",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
