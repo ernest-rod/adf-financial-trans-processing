@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
 		},
+		"lnk_on_premise_data_export_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'lnk_on_premise_data_export'"
+		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://axiomstorage4inbounddata.blob.core.windows.net"
@@ -22,6 +26,14 @@
 		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
+		},
+		"lnk_on_premise_data_export_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "\\\\mykonos\\C$\\Users\\aspac\\data\\exports"
+		},
+		"lnk_on_premise_data_export_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "aspac"
 		},
 		"containerUri": {
 			"type": "string",
@@ -53,11 +65,20 @@
 					"lnk_poseidon_database_connectionString": {
 						"value": "[parameters('lnk_poseidon_database_connectionString')]"
 					},
+					"lnk_on_premise_data_export_password": {
+						"value": "[parameters('lnk_on_premise_data_export_password')]"
+					},
 					"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint')]"
 					},
 					"lnk_adls_axiomstandardatalake_properties_typeProperties_url": {
 						"value": "[parameters('lnk_adls_axiomstandardatalake_properties_typeProperties_url')]"
+					},
+					"lnk_on_premise_data_export_properties_typeProperties_host": {
+						"value": "[parameters('lnk_on_premise_data_export_properties_typeProperties_host')]"
+					},
+					"lnk_on_premise_data_export_properties_typeProperties_userId": {
+						"value": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]"
 					},
 					"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
 						"value": "[parameters('trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope')]"

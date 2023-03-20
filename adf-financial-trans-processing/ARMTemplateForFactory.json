@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
 		},
+		"lnk_on_premise_data_export_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'lnk_on_premise_data_export'"
+		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://axiomstorage4inbounddata.blob.core.windows.net"
@@ -22,6 +26,14 @@
 		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
 			"type": "string",
 			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
+		},
+		"lnk_on_premise_data_export_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "\\\\mykonos\\C$\\Users\\aspac\\data\\exports"
+		},
+		"lnk_on_premise_data_export_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "aspac"
 		}
 	},
 	"variables": {
@@ -1255,6 +1267,16 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/IntegrationRuntime-LocalFilesTransfer')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_insert_raw_data_into_delta')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1434,6 +1456,31 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/lnk_on_premise_data_export')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Get data files to be loaded into the DW",
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('lnk_on_premise_data_export_properties_typeProperties_host')]",
+					"userId": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('lnk_on_premise_data_export_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IntegrationRuntime-LocalFilesTransfer",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/IntegrationRuntime-LocalFilesTransfer')]"
 			]
 		}
 	]
