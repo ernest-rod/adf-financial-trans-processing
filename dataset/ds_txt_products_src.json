@@ -1,0 +1,32 @@
+{
+	"name": "ds_txt_products_src",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_adls_axiomstandardatalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AdventureWrks DW/Ingest"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "products.txt",
+				"folderPath": "adventurewrks/stage",
+				"fileSystem": "textdatafiles"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "ProductID,Name,ProductNumber,MakeFlag,FinishedGoodsFlag,Color,SafetyStockLevel,ReorderPoint,StandardCost,ListPrice,Size,SizeUnitMeasureCode,WeightUnitMeasureCode,Weight,DaysToManufacture,ProductLine,Class,Style,ProductSubcategoryID,ProductModelID,SellStartDate,SellEndDate,DiscontinuedDate,ModifiedDate",
+				"type": "String"
+			}
+		]
+	}
+}
