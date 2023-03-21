@@ -30,6 +30,19 @@
 						"type": "BinaryReadSettings"
 					}
 				}
+			},
+			{
+				"name": "Stage Folder Iterator",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Stage Folder Info",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": []
 			}
 		],
 		"folder": {
