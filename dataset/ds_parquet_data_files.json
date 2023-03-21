@@ -1,5 +1,5 @@
 {
-	"name": "ds_parquet_products_dst",
+	"name": "ds_parquet_data_files",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "lnk_adls_axiomstandardatalake",
@@ -13,7 +13,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "products.parquet",
 				"folderPath": "adventurewrks/raw/parquet",
 				"fileSystem": "textdatafiles"
 			},
