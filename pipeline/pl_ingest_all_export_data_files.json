@@ -20,6 +20,7 @@
 						"storeSettings": {
 							"type": "FileServerReadSettings",
 							"recursive": true,
+							"wildcardFileName": "*.txt",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
