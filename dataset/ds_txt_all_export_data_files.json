@@ -1,6 +1,7 @@
 {
 	"name": "ds_txt_all_export_data_files",
 	"properties": {
+		"description": "Data export files from on-premise site. ",
 		"linkedServiceName": {
 			"referenceName": "lnk_on_premise_data_export",
 			"type": "LinkedServiceReference"
