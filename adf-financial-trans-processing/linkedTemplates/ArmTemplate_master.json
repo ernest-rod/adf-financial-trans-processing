@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-financial-trans-processing"
 		},
-		"lnk_poseidon_database_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
-		},
 		"lnk_on_premise_data_export_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'lnk_on_premise_data_export'"
+		},
+		"lnk_poseidon_database_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
 		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -23,10 +23,6 @@
 			"type": "string",
 			"defaultValue": "https://axiomstandarddatalake.dfs.core.windows.net"
 		},
-		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
-		},
 		"lnk_on_premise_data_export_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "\\\\mykonos\\C$\\Users\\aspac\\data\\exports"
@@ -34,6 +30,10 @@
 		"lnk_on_premise_data_export_properties_typeProperties_userId": {
 			"type": "string",
 			"defaultValue": "aspac"
+		},
+		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
 		},
 		"containerUri": {
 			"type": "string",
@@ -79,13 +79,33 @@
 					},
 					"lnk_on_premise_data_export_properties_typeProperties_userId": {
 						"value": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "adf-financial-trans-processing_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
 					},
 					"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
 						"value": "[parameters('trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope')]"
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adf-financial-trans-processing_ArmTemplate_0')]"
+			]
 		}
 	]
 }

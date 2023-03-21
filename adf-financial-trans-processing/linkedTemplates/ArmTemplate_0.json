@@ -30,10 +30,6 @@
 		"lnk_on_premise_data_export_properties_typeProperties_userId": {
 			"type": "string",
 			"defaultValue": "aspac"
-		},
-		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
 		}
 	},
 	"variables": {
@@ -396,6 +392,31 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/lnk_on_premise_data_export')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Get data files to be loaded into the DW",
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('lnk_on_premise_data_export_properties_typeProperties_host')]",
+					"userId": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('lnk_on_premise_data_export_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IntegrationRuntime-LocalFilesTransfer",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/IntegrationRuntime-LocalFilesTransfer')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_update_raw_data_in_delta')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -517,28 +538,35 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/lnk_on_premise_data_export')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/ds_txt_raw_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Get data files to be loaded into the DW",
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('lnk_on_premise_data_export_properties_typeProperties_host')]",
-					"userId": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('lnk_on_premise_data_export_password')]"
-					}
+				"description": "Destination (ADL) of export data files coming from the on-premise site.",
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
 				},
-				"connectVia": {
-					"referenceName": "IntegrationRuntime-LocalFilesTransfer",
-					"type": "IntegrationRuntimeReference"
-				}
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "adventurewrks/stage",
+						"fileSystem": "textdatafiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/IntegrationRuntime-LocalFilesTransfer')]"
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
 			]
 		},
 		{
@@ -1402,85 +1430,33 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pl_insert_raw_data_into_delta_lake')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/ds_txt_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Takes parquet data file and the delta lake.",
-				"activities": [
-					{
-						"name": "Insert Raw Transactions Into Delta",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "1.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_insert_raw_data_into_delta",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"SourceParquetRawTransactions": {},
-									"DestinationStagingParquetRawTransactions": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
+				"description": "Data export files from on-premise site. ",
+				"linkedServiceName": {
+					"referenceName": "lnk_on_premise_data_export",
+					"type": "LinkedServiceReference"
 				},
 				"folder": {
-					"name": "Delta"
+					"name": "AdventureWrks DW/Ingest"
 				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_insert_raw_data_into_delta')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trg_sevnt_axiomstorage4inbounddata_inbounddatafiles')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pl_ingest_transaction_data_files",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "BlobEventsTrigger",
+				"type": "DelimitedText",
 				"typeProperties": {
-					"blobPathBeginsWith": "/inbounddatafiles/blobs/",
-					"blobPathEndsWith": ".csv",
-					"ignoreEmptyBlobs": true,
-					"scope": "[parameters('trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope')]",
-					"events": [
-						"Microsoft.Storage.BlobCreated"
-					]
-				}
+					"location": {
+						"type": "FileServerLocation"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pl_ingest_transaction_data_files')]"
+				"[concat(variables('factoryId'), '/linkedServices/lnk_on_premise_data_export')]"
 			]
 		}
 	]

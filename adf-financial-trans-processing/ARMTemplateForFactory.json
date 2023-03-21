@@ -7,13 +7,13 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adf-financial-trans-processing"
 		},
-		"lnk_poseidon_database_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
-		},
 		"lnk_on_premise_data_export_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'lnk_on_premise_data_export'"
+		},
+		"lnk_poseidon_database_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'lnk_poseidon_database'"
 		},
 		"lnk_abls_axiomstorage4inbounddata_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -23,10 +23,6 @@
 			"type": "string",
 			"defaultValue": "https://axiomstandarddatalake.dfs.core.windows.net"
 		},
-		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
-			"type": "string",
-			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
-		},
 		"lnk_on_premise_data_export_properties_typeProperties_host": {
 			"type": "string",
 			"defaultValue": "\\\\mykonos\\C$\\Users\\aspac\\data\\exports"
@@ -34,6 +30,10 @@
 		"lnk_on_premise_data_export_properties_typeProperties_userId": {
 			"type": "string",
 			"defaultValue": "aspac"
+		},
+		"trg_sevnt_axiomstorage4inbounddata_inbounddatafiles_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/b422d504-452d-4c32-86ff-df16b9c82ff1/resourceGroups/AxiomCore_StorageAccounts/providers/Microsoft.Storage/storageAccounts/axiomstorage4inbounddata"
 		}
 	},
 	"variables": {
@@ -1223,6 +1223,31 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/lnk_on_premise_data_export')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Get data files to be loaded into the DW",
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('lnk_on_premise_data_export_properties_typeProperties_host')]",
+					"userId": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('lnk_on_premise_data_export_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "IntegrationRuntime-LocalFilesTransfer",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/IntegrationRuntime-LocalFilesTransfer')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/lnk_poseidon_database')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1459,28 +1484,148 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/lnk_on_premise_data_export')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/ds_txt_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"description": "Get data files to be loaded into the DW",
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('lnk_on_premise_data_export_properties_typeProperties_host')]",
-					"userId": "[parameters('lnk_on_premise_data_export_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('lnk_on_premise_data_export_password')]"
-					}
+				"description": "Data export files from on-premise site. ",
+				"linkedServiceName": {
+					"referenceName": "lnk_on_premise_data_export",
+					"type": "LinkedServiceReference"
 				},
-				"connectVia": {
-					"referenceName": "IntegrationRuntime-LocalFilesTransfer",
-					"type": "IntegrationRuntimeReference"
-				}
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/IntegrationRuntime-LocalFilesTransfer')]"
+				"[concat(variables('factoryId'), '/linkedServices/lnk_on_premise_data_export')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copy the data export files on premise into the Azre Data Lake",
+				"activities": [
+					{
+						"name": "Copy Export Data Files Into ADL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.txt",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_txt_all_export_data_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_txt_raw_all_export_data_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "AdventureWrks DW"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_txt_all_export_data_files')]",
+				"[concat(variables('factoryId'), '/datasets/ds_txt_raw_all_export_data_files')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_txt_raw_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Destination (ADL) of export data files coming from the on-premise site.",
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "adventurewrks/stage",
+						"fileSystem": "textdatafiles"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
 			]
 		}
 	]
