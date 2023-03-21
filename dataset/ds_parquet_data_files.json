@@ -1,6 +1,7 @@
 {
 	"name": "ds_parquet_data_files",
 	"properties": {
+		"description": "Dataset for parquet data file to be stored in raw area.",
 		"linkedServiceName": {
 			"referenceName": "lnk_adls_axiomstandardatalake",
 			"type": "LinkedServiceReference"
