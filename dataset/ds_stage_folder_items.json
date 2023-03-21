@@ -1,0 +1,21 @@
+{
+	"name": "ds_stage_folder_items",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_adls_axiomstandardatalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AdventureWrks DW/Ingest"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "adventurewrks/stage",
+				"fileSystem": "textdatafiles"
+			}
+		}
+	}
+}
