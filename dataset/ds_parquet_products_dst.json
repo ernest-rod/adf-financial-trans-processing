@@ -1,0 +1,24 @@
+{
+	"name": "ds_parquet_products_dst",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_adls_axiomstandardatalake",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AdventureWrks DW/Ingest"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "products.parquet",
+				"folderPath": "adventurewrks/raw/parquet",
+				"fileSystem": "textdatafiles"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
