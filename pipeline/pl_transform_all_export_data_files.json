@@ -5,6 +5,7 @@
 		"activities": [
 			{
 				"name": "Stage Folder Info",
+				"description": "Gets file information from the  stage folder.",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -34,6 +35,7 @@
 			},
 			{
 				"name": "Stage Folder Iterator",
+				"description": "Iterate the stage folder to get the name of all files stored in that area, then copy each one into the raw area.",
 				"type": "ForEach",
 				"dependsOn": [
 					{
