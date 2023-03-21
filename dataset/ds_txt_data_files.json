@@ -6,7 +6,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"current_file_name": {
+			"param_current_file_name": {
 				"type": "string"
 			}
 		},
