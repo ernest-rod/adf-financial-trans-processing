@@ -1,6 +1,7 @@
 {
 	"name": "ds_txt_raw_all_export_data_files",
 	"properties": {
+		"description": "Destination (ADL) of export data files coming from the on-premise site.",
 		"linkedServiceName": {
 			"referenceName": "lnk_adls_axiomstandardatalake",
 			"type": "LinkedServiceReference"
