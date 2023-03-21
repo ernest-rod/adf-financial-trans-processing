@@ -1,6 +1,7 @@
 {
 	"name": "ds_txt_data_files",
 	"properties": {
+		"description": "Dataset for the txt data file from the stage area.",
 		"linkedServiceName": {
 			"referenceName": "lnk_adls_axiomstandardatalake",
 			"type": "LinkedServiceReference"
