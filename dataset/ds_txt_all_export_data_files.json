@@ -1,0 +1,25 @@
+{
+	"name": "ds_txt_all_export_data_files",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "lnk_on_premise_data_export",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Ingest/AdventureWrks DW"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"fileName": "*.txt"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
