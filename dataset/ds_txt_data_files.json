@@ -18,6 +18,10 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().param_current_file_name",
+					"type": "Expression"
+				},
 				"folderPath": "adventurewrks/stage",
 				"fileSystem": "textdatafiles"
 			},
