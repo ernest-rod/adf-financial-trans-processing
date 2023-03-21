@@ -1,6 +1,7 @@
 {
 	"name": "pl_transform_all_export_data_files",
 	"properties": {
+		"description": "Copy text data files from stage area into the raw area converted to parquet.",
 		"activities": [
 			{
 				"name": "Stage Folder Info",
