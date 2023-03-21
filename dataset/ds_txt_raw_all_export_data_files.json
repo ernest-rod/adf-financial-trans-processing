@@ -7,7 +7,7 @@
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "Ingest/AdventureWrks DW"
+			"name": "AdventureWrks DW/Ingest"
 		},
 		"annotations": [],
 		"type": "DelimitedText",
