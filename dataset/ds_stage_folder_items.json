@@ -5,11 +5,6 @@
 			"referenceName": "lnk_adls_axiomstandardatalake",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"param_current_file": {
-				"type": "string"
-			}
-		},
 		"folder": {
 			"name": "AdventureWrks DW/Ingest"
 		},
