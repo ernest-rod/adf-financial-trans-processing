@@ -62,6 +62,11 @@
 				}
 			}
 		],
+		"variables": {
+			"var_current_file": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "AdventureWrks DW"
 		},
