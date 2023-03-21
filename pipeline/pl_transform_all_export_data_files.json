@@ -42,7 +42,13 @@
 						]
 					}
 				],
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Stage Folder Info').output.childItems",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"folder": {
