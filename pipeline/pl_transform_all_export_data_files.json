@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
+				"name": "Stage Folder Info",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
