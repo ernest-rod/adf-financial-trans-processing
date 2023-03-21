@@ -1,5 +1,5 @@
 {
-	"name": "ds_txt_products_src",
+	"name": "ds_txt_data_files_stage",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "lnk_adls_axiomstandardatalake",
