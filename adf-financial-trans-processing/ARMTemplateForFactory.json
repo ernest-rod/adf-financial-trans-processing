@@ -41,6 +41,89 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copy the data export files on premise into the Azre Data Lake",
+				"activities": [
+					{
+						"name": "Copy Export Data Files Into ADL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "FileServerReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.txt",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_txt_all_export_data_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_txt_raw_all_export_data_files",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "AdventureWrks DW"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_txt_all_export_data_files')]",
+				"[concat(variables('factoryId'), '/datasets/ds_txt_raw_all_export_data_files')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_ingest_data_file_verification')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -891,6 +974,156 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pl_transform_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Copy text data files from stage area into the raw area converted to parquet.",
+				"activities": [
+					{
+						"name": "Stage Folder Info",
+						"description": "Gets file information from the  stage folder.",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_stage_folder_items",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobFSReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "BinaryReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Stage Folder Iterator",
+						"description": "Iterate the stage folder to get the name of all files stored in that area, then copy each one into the raw area.",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Stage Folder Info",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Stage Folder Info').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Copy Data Files From TXT To Parquet",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "ParquetSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "ParquetWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_txt_data_files",
+											"type": "DatasetReference",
+											"parameters": {
+												"param_current_file_name": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_parquet_data_files",
+											"type": "DatasetReference",
+											"parameters": {
+												"param_current_file_name": {
+													"value": "@concat( replace(item().name, '.txt', ''), '.parquet')  ",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"var_current_file": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "AdventureWrks DW"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_stage_folder_items')]",
+				"[concat(variables('factoryId'), '/datasets/ds_txt_data_files')]",
+				"[concat(variables('factoryId'), '/datasets/ds_parquet_data_files')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_csv_inbound_transaction_data_file')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1089,6 +1322,44 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_parquet_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Dataset for parquet data file to be stored in raw area.",
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"param_current_file_name": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().param_current_file_name",
+							"type": "Expression"
+						},
+						"folderPath": "adventurewrks/raw/parquet",
+						"fileSystem": "textdatafiles"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_poseidon_bank_stage_table')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1187,6 +1458,135 @@
 						"fileSystem": "textdatafiles"
 					},
 					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_stage_folder_items')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "Binary",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "adventurewrks/stage",
+						"fileSystem": "textdatafiles"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_txt_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Data export files from on-premise site. ",
+				"linkedServiceName": {
+					"referenceName": "lnk_on_premise_data_export",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_on_premise_data_export')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_txt_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Dataset for the txt data file from the stage area.",
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"param_current_file_name": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().param_current_file_name",
+							"type": "Expression"
+						},
+						"folderPath": "adventurewrks/stage",
+						"fileSystem": "textdatafiles"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_txt_raw_all_export_data_files')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Destination (ADL) of export data files coming from the on-premise site.",
+				"linkedServiceName": {
+					"referenceName": "lnk_adls_axiomstandardatalake",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AdventureWrks DW/Ingest"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "adventurewrks/stage",
+						"fileSystem": "textdatafiles"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
 				"schema": []
 			},
@@ -1478,448 +1878,6 @@
 						"     )) ~> UpdateDeltaTransactions"
 					]
 				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_txt_all_export_data_files')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Data export files from on-premise site. ",
-				"linkedServiceName": {
-					"referenceName": "lnk_on_premise_data_export",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "FileServerLocation"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_on_premise_data_export')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_ingest_all_export_data_files')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Copy the data export files on premise into the Azre Data Lake",
-				"activities": [
-					{
-						"name": "Copy Export Data Files Into ADL",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "FileServerReadSettings",
-									"recursive": true,
-									"wildcardFileName": "*.txt",
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_txt_all_export_data_files",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_txt_raw_all_export_data_files",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "AdventureWrks DW"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_txt_all_export_data_files')]",
-				"[concat(variables('factoryId'), '/datasets/ds_txt_raw_all_export_data_files')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_txt_raw_all_export_data_files')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Destination (ADL) of export data files coming from the on-premise site.",
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "adventurewrks/stage",
-						"fileSystem": "textdatafiles"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_txt_products_src')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "products.txt",
-						"folderPath": "adventurewrks/stage",
-						"fileSystem": "textdatafiles"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "ProductID",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "ProductNumber",
-						"type": "String"
-					},
-					{
-						"name": "MakeFlag",
-						"type": "String"
-					},
-					{
-						"name": "FinishedGoodsFlag",
-						"type": "String"
-					},
-					{
-						"name": "Color",
-						"type": "String"
-					},
-					{
-						"name": "SafetyStockLevel",
-						"type": "String"
-					},
-					{
-						"name": "ReorderPoint",
-						"type": "String"
-					},
-					{
-						"name": "StandardCost",
-						"type": "String"
-					},
-					{
-						"name": "ListPrice",
-						"type": "String"
-					},
-					{
-						"name": "Size",
-						"type": "String"
-					},
-					{
-						"name": "SizeUnitMeasureCode",
-						"type": "String"
-					},
-					{
-						"name": "WeightUnitMeasureCode",
-						"type": "String"
-					},
-					{
-						"name": "Weight",
-						"type": "String"
-					},
-					{
-						"name": "DaysToManufacture",
-						"type": "String"
-					},
-					{
-						"name": "ProductLine",
-						"type": "String"
-					},
-					{
-						"name": "Class",
-						"type": "String"
-					},
-					{
-						"name": "Style",
-						"type": "String"
-					},
-					{
-						"name": "ProductSubcategoryID",
-						"type": "String"
-					},
-					{
-						"name": "ProductModelID",
-						"type": "String"
-					},
-					{
-						"name": "SellStartDate",
-						"type": "String"
-					},
-					{
-						"name": "SellEndDate",
-						"type": "String"
-					},
-					{
-						"name": "DiscontinuedDate",
-						"type": "String"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_txt_products_category_src')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "products_category.txt",
-						"folderPath": "adventurewrks/stage",
-						"fileSystem": "textdatafiles"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "ProductCategoryID",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dst_txt_products_model_src')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "products_model.txt",
-						"folderPath": "adventurewrks/stage",
-						"fileSystem": "textdatafiles"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "ProductModelID",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_txt_products_subcategory_src')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "products_subcategory.txt",
-						"folderPath": "adventurewrks/stage",
-						"fileSystem": "textdatafiles"
-					},
-					"columnDelimiter": "|",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "ProductSubcategoryID",
-						"type": "String"
-					},
-					{
-						"name": "ProductCategoryID",
-						"type": "String"
-					},
-					{
-						"name": "Name",
-						"type": "String"
-					},
-					{
-						"name": "ModifiedDate",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_parquet_products_dst')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "lnk_adls_axiomstandardatalake",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "AdventureWrks DW/Ingest"
-				},
-				"annotations": [],
-				"type": "Parquet",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "products.parquet",
-						"folderPath": "adventurewrks/raw/parquet",
-						"fileSystem": "textdatafiles"
-					},
-					"compressionCodec": "snappy"
-				},
-				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/lnk_adls_axiomstandardatalake')]"
