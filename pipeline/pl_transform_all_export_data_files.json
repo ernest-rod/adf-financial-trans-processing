@@ -113,7 +113,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"param_current_file_name": {
-											"value": "@item().name",
+											"value": "@concat(item().name, '.parquet')  ",
 											"type": "Expression"
 										}
 									}
