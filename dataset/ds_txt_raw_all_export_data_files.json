@@ -17,7 +17,7 @@
 				"folderPath": "adventurewrks/stage",
 				"fileSystem": "textdatafiles"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": "|",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
